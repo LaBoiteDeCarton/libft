@@ -49,7 +49,8 @@ SRCS = ft_isalnum.c \
 		ft_toupper.c \
 		ft_tolower.c \
 		ft_lst1.c \
-		ft_lst2.c
+		ft_lst2.c \
+		ft_strisdigit.c
 
 OBJS = ${SRCS:.c=.o}
 
