@@ -12,103 +12,77 @@
 
 #include "libft.h"
 
-static int	sepcount(char const *s, char c)
-{
-	int	count;
-	int	isword;
-
-	count = 0;
-	isword = 0;
-	if (!s)
-		return (0);
-	while (*s)
-	{
-		if (*s != c && !isword)
-		{
-			count++;
-			isword = 1;
-		}
-		else if (*s == c)
-			isword = 0;
-		s++;
-	}
-	return (count);
-}
-
-static int	next_word_len(char const *s, char c)
-{
-	int	count;
-
-	count = 0;
-	while (*s == c)
-		s++;
-	while (*s != c)
-	{
-		count++;
-		s++;
-	}
-	return (count);
-}
-
-static char	*ft_next_str(char const **s, char c)
-{
-	char	*next_str;
-	int		next_str_len;
-	int		i;
-
-	next_str_len = next_word_len(*s, c);
-	next_str = malloc(sizeof(char) * (next_str_len + 1));
-	if (!next_str)
-		return (NULL);
-	else
-	{
-		i = 0;
-		while (**s == c)
-			(*s)++;
-		while (i < next_str_len)
-		{
-			next_str[i] = **s;
-			(*s)++;
-			i++;
-		}
-		next_str[i] = 0;
-	}
-	return (next_str);
-}
-
 static char	**free_split(char **splited, int i)
 {
-	while (i-- > 0)
+	while (i--)
 		free(splited[i]);
 	free(splited);
 	return (NULL);
 }
 
+static int	nbwords(char const *s, char c)
+{
+	int	count;
+
+	count = 0;
+	while (*s)
+	{
+		while (*s == c)
+			s++;
+		if (*s)
+			count++;
+		while (*s && *s != c)
+			s++;
+	}
+	return (count);
+}
+
+static int	ft_malloc_word(char const *s, char **word, char c)
+{
+	int	len;
+
+	while (*s && *s == c)
+		s++;
+	len = 0;
+	while (s[len] && s[len] != c)
+		len++;
+	*word = malloc(sizeof(char *) * (len + 1));
+	if (!(*word))
+		return (0);
+	return (1);
+}
+
+static void	ft_copy_word(char const **s, char *word, char c)
+{
+	int	cpy;
+
+	while (**s && **s == c)
+		(*s)++;
+	cpy = 0;
+	while (**s && (**s) != c)
+		word[cpy++] = *((*s)++);
+	word[cpy] = 0;
+}
+
 char	**ft_split(char const *s, char c)
 {
 	char	**split_tab;
-	char	*next_str;
 	int		i;
 	int		size;
 
-	size = sepcount(s, c);
-	split_tab = malloc(sizeof(char *) * (size + 1));
-	if (!split_tab || !s)
+	if (!s)
 		return (NULL);
-	else
+	size = nbwords(s, c);
+	split_tab = (char **)malloc(sizeof(char *) * (size + 1));
+	if (!split_tab)
+		return (NULL);
+	i = -1;
+	while (++i < size)
 	{
-		i = 0;
-		while (i < size)
-		{
-			next_str = ft_next_str(&s, c);
-			if (next_str == NULL)
-				break ;
-			split_tab[i] = next_str;
-			i++;
-		}
-		if (i < size)
+		if (!ft_malloc_word(s, &(split_tab[i]), c))
 			return (free_split(split_tab, i));
-		split_tab[size] = NULL;
+		ft_copy_word(&s, split_tab[i], c);
 	}
+	split_tab[size] = NULL;
 	return (split_tab);
 }
