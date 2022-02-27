@@ -2,8 +2,8 @@
 
 int	ft_atoi(const char *str)
 {
-	int	res;
-	int	signe;
+	long	res;
+	int		signe;
 
 	res = 0;
 	signe = 1;
@@ -18,6 +18,10 @@ int	ft_atoi(const char *str)
 	{
 		res = res * 10 + signe * (*str - '0');
 		str++;
+		if (res > INT32_MAX)
+			return (INT32_MAX);
+		if (res < INT32_MIN)
+			return (INT32_MIN);
 	}
-	return (res);
+	return ((int)res);
 }
